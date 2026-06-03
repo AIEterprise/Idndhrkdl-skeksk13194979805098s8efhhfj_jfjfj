@@ -206,7 +206,7 @@
                 <div style="transform: translateZ(15px);" class="w-full bg-slate-50/60 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/[0.05] rounded-2xl p-4 mb-8 text-left space-y-3 font-sans shadow-sm dark:shadow-none transition-colors duration-700">
                     <div class="flex justify-between items-center text-[11px]">
                         <span class="text-slate-500 dark:text-slate-400 font-medium dark:font-light transition-colors">Target Node</span>
-                        <span id="target-vpa" class="font-mono font-bold dark:font-medium text-brandCharcoal dark:text-slate-200 uppercase tracking-wider transition-colors">rajrakhi12sarkar@okicici</span>
+                        <span id="target-vpa" class="font-mono font-bold dark:font-medium text-brandCharcoal dark:text-slate-200 uppercase tracking-wider transition-colors">RAJRAKHI12SARKAR@OKICICI</span>
                     </div>
                     <div class="h-[1px] bg-slate-200/60 dark:bg-white/[0.04] w-full transition-colors duration-700"></div>
                     <div class="flex justify-between items-center text-[11px]">
@@ -280,7 +280,7 @@
                 }
             });
 
-            // --- Multi-App Processing Routing Logic ---
+            // --- Multi-App Processing Bypassing Chromium Restrictions ---
             payConfirmBtn.addEventListener("click", () => {
                 const targetVPA = targetVpaSpan.textContent.trim().toLowerCase();
                 const inputAmountStr = paymentInput.value.trim();
@@ -296,7 +296,16 @@
                 
                 const universalUpiIntentString = `upi://pay?pa=${targetVPA}&pn=${payeeName}&am=${finalFormattedAmount}&cu=INR&tn=${txNote}`;
 
-                window.location.href = universalUpiIntentString;
+                // CHROMIUM PATCH: Create virtual DOM element to force secure intent evaluation
+                const secureIntentAnchor = document.createElement('a');
+                secureIntentAnchor.href = universalUpiIntentString;
+                
+                // Mount to layout node context to bypass gesture safety barriers
+                document.body.appendChild(secureIntentAnchor);
+                secureIntentAnchor.click();
+                
+                // Cleanup instantly after handoff execution completes
+                document.body.removeChild(secureIntentAnchor);
             });
 
             // --- Entrance Animation Pipeline ---
@@ -327,7 +336,6 @@
                     card.style.transform = "rotateX(0deg) rotateY(0deg)";
                 });
             } else {
-                // Mobile layout remains flat to guarantee 100% input field focus response
                 card.style.transform = "none";
             }
         });
