@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vortex Empire - Unified Settlement Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Poppins', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace']
+                    },
+                    colors: {
+                        brandCharcoal: '#090B11',
+                        brandSlateBlue: '#1E2640',
+                        brandSeaGreen: '#0D9488',
+                        brandMintGreen: '#2DD4BF',
+                        brandLuxuryWhite: '#F8FAFC'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* CSS Variables Engine for Deep Structural Theme Swapping */
+        :root {
+            --grid-circle: rgba(9, 11, 17, 0.04);
+            --grid-line-x: rgba(13, 148, 136, 0.03);
+            --grid-line-y: rgba(45, 212, 191, 0.03);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.03);
+            --glass-shadow: 0 30px 60px -15px rgba(9, 11, 17, 0.08), 0 10px 20px -5px rgba(13, 148, 136, 0.05);
+        }
+
+        .dark {
+            --grid-circle: rgba(255, 255, 255, 0.02);
+            --grid-line-x: rgba(13, 148, 136, 0.01);
+            --grid-line-y: rgba(45, 212, 191, 0.01);
+            --glass-bg: rgba(9, 11, 17, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-shadow: none;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.6s ease;
+        }
+
+        .system-grid {
+            background-size: 60px 60px;
+            background-image: 
+                radial-gradient(circle at 1px 1px, var(--grid-circle) 1px, transparent 0),
+                linear-gradient(to right, var(--grid-line-x) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-line-y) 1px, transparent 1px);
+            transition: background-image 0.6s ease;
+        }
+
+        /* Desktop Perspective Setup */
+        @media (min-width: 768px) {
+            .viewport-stage {
+                perspective: 1400px;
+                transform-style: preserve-3d;
+            }
+            .interactive-manifest {
+                transform-style: preserve-3d;
+                will-change: transform;
+                transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .preserve-3d { transform-style: preserve-3d; }
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            transition: background 0.6s ease, border 0.6s ease, box-shadow 0.6s ease;
+        }
+
+        /* Micro-Animations */
+        @keyframes drawCheckmark {
+            0% { stroke-dashoffset: 80; opacity: 0; }
+            50% { opacity: 1; }
+            100% { stroke-dashoffset: 0; opacity: 1; }
+        }
+
+        @keyframes ringExpand {
+            0% { transform: scale(0.5); opacity: 0; border-width: 2px; }
+            30% { opacity: 0.6; border-width: 4px; }
+            100% { transform: scale(1.5); opacity: 0; border-width: 1px; }
+        }
+
+        @keyframes subtleFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+
+        @keyframes borderSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Swirl Theme Animation */
+        @keyframes swirlIn {
+            0% { transform: rotate(-180deg) scale(0.2); opacity: 0; filter: blur(4px); }
+            100% { transform: rotate(0deg) scale(1); opacity: 1; filter: blur(0px); }
+        }
+
+        @keyframes swirlOut {
+            0% { transform: rotate(0deg) scale(1); opacity: 1; filter: blur(0px); }
+            100% { transform: rotate(180deg) scale(0.2); opacity: 0; filter: blur(4px); }
+        }
+
+        .icon-swirl-in { animation: swirlIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        .icon-swirl-out { animation: swirlOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .animate-draw-check { stroke-dasharray: 80; stroke-dashoffset: 80; animation: drawCheckmark 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.4s; }
+        .animate-shockwave { animation: ringExpand 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.2s; }
+        .animate-float-card { animation: subtleFloat 6s ease-in-out infinite; }
+        .animate-glowing-track { animation: borderSpin 6s linear infinite; }
+
+        .shimmer-btn { position: relative; overflow: hidden; }
+        .shimmer-btn::after {
+            content: ''; position: absolute; top: -50%; left: -60%; width: 30%; height: 200%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: rotate(30deg); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); opacity: 0;
+        }
+        .shimmer-btn:hover::after { opacity: 1; left: 140%; }
+    </style>
+</head>
+<body class="relative w-screen h-screen bg-brandLuxuryWhite dark:bg-brandCharcoal overflow-hidden system-grid flex items-center justify-center font-sans text-brandCharcoal dark:text-white transition-colors duration-700">
+
+    <button id="theme-toggle" class="absolute top-6 right-6 md:top-8 md:right-8 w-12 h-12 rounded-full glass-panel flex items-center justify-center z-50 hover:scale-110 active:scale-95 transition-transform duration-300 group shadow-lg overflow-hidden border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-brandCharcoal/50">
+        <svg id="icon-sun" class="w-6 h-6 text-brandMintGreen absolute icon-swirl-in opacity-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        
+        <svg id="icon-moon" class="w-6 h-6 text-brandSeaGreen absolute icon-swirl-out opacity-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-teal-100/60 dark:bg-teal-950/20 rounded-full blur-[140px] pointer-events-none transition-colors duration-700"></div>
+    <div class="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-100/50 dark:bg-blue-950/20 rounded-full blur-[140px] pointer-events-none transition-colors duration-700"></div>
+
+    <div class="w-full max-w-[440px] px-6 viewport-stage z-20">
+        
+        <div id="manifest-card" class="interactive-manifest w-full rounded-[32px] p-[1.2px] relative overflow-hidden bg-black/[0.02] dark:bg-white/[0.04] opacity-0 translate-y-12 scale-[0.95] transition-all duration-1000 ease-out">
+            
+            <div class="absolute inset-[-60%] bg-[conic-gradient(from_0deg,transparent_40deg,#0D9488_140deg,#2DD4BF_180deg,transparent_220deg,transparent_360deg)] animate-glowing-track pointer-events-none origin-center opacity-40 dark:opacity-80 transition-opacity duration-700"></div>
+            
+            <div class="glass-panel w-full rounded-[31px] p-8 md:p-10 flex flex-col items-center text-center relative z-10 preserve-3d">
+                
+                <div class="w-24 h-24 relative flex items-center justify-center mb-6 preserve-3d" style="transform: translateZ(40px);">
+                    <div class="absolute inset-0 border-2 border-brandMintGreen/60 dark:border-brandMintGreen/40 rounded-full scale-0 opacity-0 animate-shockwave"></div>
+                    <div class="absolute inset-2 border border-brandSeaGreen/50 dark:border-brandSeaGreen/30 rounded-full scale-0 opacity-0 animate-shockwave" style="animation-delay: 0.3s;"></div>
+
+                    <div class="absolute inset-0 rounded-full border border-dashed border-slate-300 dark:border-white/20 animate-[spin_15s_linear_infinite] transition-colors duration-700"></div>
+                    
+                    <div class="absolute inset-1.5 rounded-full bg-white/95 dark:bg-brandCharcoal/90 border border-brandMintGreen/30 dark:border-brandMintGreen/20 shadow-[0_15px_35px_rgba(13,148,136,0.15)] dark:shadow-[0_10px_30px_rgba(45,212,191,0.15)] flex items-center justify-center backdrop-blur-md transition-all duration-700">
+                        <svg class="w-10 h-10 text-brandSeaGreen dark:text-brandMintGreen relative z-10 transition-colors duration-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </div>
+
+                    <div class="absolute inset-4 rounded-full bg-brandMintGreen/20 blur-xl -z-10"></div>
+                </div>
+
+                <div style="transform: translateZ(30px);" class="mb-2">
+                    <span class="font-mono text-[9px] font-bold tracking-[0.3em] text-brandSeaGreen dark:text-brandMintGreen uppercase transition-colors duration-700">INITIALIZE SETTLEMENT VALUE</span>
+                </div>
+                
+                <div id="amount-wrapper" class="mb-4 w-full max-w-[300px] relative flex items-center justify-center bg-slate-100/80 dark:bg-white/[0.04] border border-slate-300 dark:border-white/10 rounded-2xl px-4 py-3 transition-all duration-300 cursor-text z-50 focus-within:border-brandSeaGreen dark:focus-within:border-brandMintGreen focus-within:ring-2 focus-within:ring-brandMintGreen/20">
+                    <span class="font-mono text-2xl text-slate-400 dark:text-white/40 mr-1.5 select-none pointer-events-none">₹</span>
+                    <input id="payment-amount" type="number" inputmode="decimal" step="any" min="0.01" class="w-full bg-transparent border-none outline-none text-4xl font-light font-mono text-center tracking-tight text-brandCharcoal dark:text-white placeholder-slate-400 dark:placeholder-white/20 relative z-50 pointer-events-auto block" placeholder="0.00" style="-webkit-tap-highlight-color: transparent;">
+                </div>
+
+                <p style="transform: translateZ(20px);" class="text-[11px] text-slate-500 dark:text-slate-400 font-medium dark:font-light max-w-[280px] leading-relaxed mb-8 transition-colors duration-700">
+                    Specify execution capital parameters. Upon layout confirmation, the target system tray launches automatically for open UPI asset allocation.
+                </p>
+
+                <div style="transform: translateZ(15px);" class="w-full bg-slate-50/60 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/[0.05] rounded-2xl p-4 mb-8 text-left space-y-3 font-sans shadow-sm dark:shadow-none transition-colors duration-700">
+                    <div class="flex justify-between items-center text-[11px]">
+                        <span class="text-slate-500 dark:text-slate-400 font-medium dark:font-light transition-colors">Target Node</span>
+                        <span id="target-vpa" class="font-mono font-bold dark:font-medium text-brandCharcoal dark:text-slate-200 uppercase tracking-wider transition-colors">rajrakhi12sarkar@okicici</span>
+                    </div>
+                    <div class="h-[1px] bg-slate-200/60 dark:bg-white/[0.04] w-full transition-colors duration-700"></div>
+                    <div class="flex justify-between items-center text-[11px]">
+                        <span class="text-slate-500 dark:text-slate-400 font-medium dark:font-light transition-colors">Routing Protocol</span>
+                        <span class="font-mono text-brandSeaGreen dark:text-brandMintGreen/90 tracking-tight font-semibold dark:font-normal transition-colors">MULTI-APP_CROSS_INTENT</span>
+                    </div>
+                    <div class="h-[1px] bg-slate-200/60 dark:bg-white/[0.04] w-full transition-colors duration-700"></div>
+                    <div class="flex justify-between items-center text-[11px]">
+                        <span class="text-slate-500 dark:text-slate-400 font-medium dark:font-light transition-colors">Encryption Architecture</span>
+                        <span class="flex items-center gap-1.5 font-mono font-semibold dark:font-normal text-[10px] text-brandSeaGreen transition-colors">
+                            <span class="w-1.5 h-1.5 rounded-full bg-brandSeaGreen animate-pulse"></span> AES-256 COMPLIANT
+                        </span>
+                    </div>
+                </div>
+
+                <div style="transform: translateZ(35px);" class="w-full space-y-3">
+                    <button id="pay-confirm-btn" class="shimmer-btn w-full bg-gradient-to-r from-brandSeaGreen to-brandMintGreen text-white dark:text-brandCharcoal font-semibold tracking-wider text-xs uppercase py-4 px-6 rounded-2xl hover:opacity-95 transition-all shadow-[0_8px_25px_rgba(13,148,136,0.25)] dark:shadow-[0_4px_20px_rgba(45,212,191,0.2)] active:scale-[0.98]">
+                        Confirm & Initialize Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="absolute top-12 left-12 text-[9px] font-mono tracking-[0.3em] text-slate-400 dark:text-white/20 uppercase pointer-events-none hidden md:block transition-colors duration-700">
+        SYS.STATUS // ENGINE_STANDBY
+    </div>
+    <div class="absolute bottom-12 right-12 text-[9px] font-mono tracking-[0.3em] text-slate-400 dark:text-white/20 uppercase pointer-events-none hidden md:block transition-colors duration-700">
+        NETWORK COMPONENT // FIXED_TOUCH_STAGE
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const card = document.getElementById("manifest-card");
+            const htmlNode = document.documentElement;
+            const themeToggleBtn = document.getElementById("theme-toggle");
+            const sunIcon = document.getElementById("icon-sun");
+            const moonIcon = document.getElementById("icon-moon");
+            
+            const amountWrapper = document.getElementById("amount-wrapper");
+            const paymentInput = document.getElementById("payment-amount");
+            const payConfirmBtn = document.getElementById("pay-confirm-btn");
+            const targetVpaSpan = document.getElementById("target-vpa");
+
+            const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+            // --- Absolute Native Touch Route for Handsets ---
+            amountWrapper.addEventListener("click", (e) => {
+                paymentInput.focus();
+            });
+
+            // --- Theme Swirl Engine ---
+            if(htmlNode.classList.contains('dark')) {
+                sunIcon.classList.remove('icon-swirl-out');
+                sunIcon.classList.add('icon-swirl-in');
+            } else {
+                moonIcon.classList.remove('icon-swirl-out');
+                moonIcon.classList.add('icon-swirl-in');
+            }
+
+            themeToggleBtn.addEventListener("click", () => {
+                const isDark = htmlNode.classList.contains('dark');
+                if (isDark) {
+                    htmlNode.classList.remove('dark');
+                    sunIcon.classList.replace('icon-swirl-in', 'icon-swirl-out');
+                    moonIcon.classList.replace('icon-swirl-out', 'icon-swirl-in');
+                } else {
+                    htmlNode.classList.add('dark');
+                    moonIcon.classList.replace('icon-swirl-in', 'icon-swirl-out');
+                    sunIcon.classList.replace('icon-swirl-out', 'icon-swirl-in');
+                }
+            });
+
+            // --- Multi-App Processing Routing Logic ---
+            payConfirmBtn.addEventListener("click", () => {
+                const targetVPA = targetVpaSpan.textContent.trim().toLowerCase();
+                const inputAmountStr = paymentInput.value.trim();
+                
+                if (!inputAmountStr || parseFloat(inputAmountStr) <= 0 || isNaN(parseFloat(inputAmountStr))) {
+                    alert("Execution Error: Allocation parameters invalid. Please specify a clean settlement amount greater than 0.");
+                    return;
+                }
+
+                const finalFormattedAmount = parseFloat(inputAmountStr).toFixed(2);
+                const payeeName = encodeURIComponent("Vortex Empire Network");
+                const txNote = encodeURIComponent("Custom Dashboard Capital Settlement");
+                
+                const universalUpiIntentString = `upi://pay?pa=${targetVPA}&pn=${payeeName}&am=${finalFormattedAmount}&cu=INR&tn=${txNote}`;
+
+                window.location.href = universalUpiIntentString;
+            });
+
+            // --- Entrance Animation Pipeline ---
+            setTimeout(() => {
+                card.classList.remove("opacity-0", "translate-y-12", "scale-[0.95]");
+                card.classList.add("opacity-100", "translate-y-0", "scale-100");
+                
+                setTimeout(() => {
+                    if (!isMobileDevice) {
+                        card.classList.add("animate-float-card");
+                    }
+                }, 1000);
+            }, 300);
+
+            // --- Mouse Parallax Engine (Strictly for Desktop Viewports) ---
+            if (!isMobileDevice) {
+                document.addEventListener("mousemove", (e) => {
+                    if (document.activeElement === paymentInput) return; 
+                    const centerPointX = window.innerWidth / 2;
+                    const centerPointY = window.innerHeight / 2;
+                    const deltaX = (e.clientX - centerPointX) / centerPointX;
+                    const deltaY = (e.clientY - centerPointY) / centerPointY;
+
+                    card.style.transform = `rotateX(${deltaY * -7}deg) rotateY(${deltaX * 7}deg)`;
+                });
+
+                document.addEventListener("mouseleave", () => {
+                    card.style.transform = "rotateX(0deg) rotateY(0deg)";
+                });
+            } else {
+                // Mobile layout remains flat to guarantee 100% input field focus response
+                card.style.transform = "none";
+            }
+        });
+    </script>
+</body>
+</html>
